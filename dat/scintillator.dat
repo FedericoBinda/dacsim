@@ -1,0 +1,55 @@
+#
+# Scintillator coefficients
+#
+# Decay constant on the left, fraction of the component on the right.
+
+electron
+
+ 4.1    0.89
+ 32     0.07
+ 160    0.03
+
+proton
+
+ 5.2    0.51
+ 32     0.23
+ 130    0.17
+
+
+
+
+# - Useful parameters -  
+#
+# NE213 equivalents from:
+#        T.Szczesniak et al., "Light Pulse Shapes in Liquid Scintillators Originating
+#        From Gamma-Rays and Neutrons", IEEE Trans. on Nucl. Sci., VOL. 57, NO.6, Dec 2010
+#
+# EJ301
+#
+# 4.1    0.89
+# 32     0.07
+# 160    0.03
+#
+# 5.2    0.51
+# 32     0.23
+# 130    0.17
+#
+# BC501A
+#
+# 4.0    0.83
+# 32     0.07
+# 170    0.05
+#
+# 5.1    0.40
+# 33     0.21
+# 160    0.20
+#
+# MAST
+#
+# 4.1    0.89
+# 32     0.07
+# 160    0.03
+#
+# 4.2    0.80
+# 29     0.23
+# 120    0.17
