@@ -14,7 +14,8 @@ Simulate the data acquisition chain of a scintillator:
 
 '''
 
-import numpy as np
 import pylab as pl
+import scintillator as sci
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
+    sci.scintillator(1,1)
