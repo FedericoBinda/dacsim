@@ -18,4 +18,6 @@ import pylab as pl
 import scintillator as sci
 
 if __name__ == '__main__':
-    sci.scintillator(1,1)
+    t, amp = sci.scintillator(1,'proton')
+    pl.plot(t, amp)
+    pl.show()
