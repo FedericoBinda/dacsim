@@ -1,4 +1,4 @@
-***
+'''
 dacsim
 ======
 
@@ -11,9 +11,10 @@ Simulate the data acquisition chain of a scintillator:
  - photomultiplier tube
  - cable
  - digitizer
-***
+
+'''
 
 import numpy as np
 import pylab as pl
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
