@@ -46,14 +46,12 @@ def load_coefficients():
     return coeff_dict
 
 coeff_dict = load_coefficients()  
-          
 
-def scintillator(nphots, ptype, plen = 600, dt = 0.05):
+def scintillator(ptype, plen = 600, dt = 0.05):
     '''
     Generate a scintillator pulse.
    
     input:
-      - nphots = number of photons that generate the pulse
       - ptype = type of pulse. Can be "electron" or "proton"
       - plen = pulse length [ns]
       - dt = time step [ns]
@@ -62,16 +60,19 @@ def scintillator(nphots, ptype, plen = 600, dt = 0.05):
       - amp = amplitude vector of the scintillation pulse
     '''
 
-    norm = sum(np.array(coeff_dict[ptype])[:,1]) # normaliztion. If slow, move this outside the function
     t = np.arange(0,plen,dt) # time axis
     try:
-        amp = [ (c[0]/norm)*np.exp(-t/c[1]) for c in coeff_dict[ptype] ]
+        amp = [ (c[1])*np.exp(-t/c[0]) for c in coeff_dict[ptype] ]
         amp = sum(amp)
+        amp = amp / sum(amp) # normalization
         return t, amp
     except KeyError:
         print 'ERROR! ptype not valid!'
         return 0
-    #
-    # use alternatives: if nphots high, add poisson noise on pulse
-    # else generate random times according to the function
-    #
+
+def generate_pulse(nphots, ptype, plen = 600, dt = 0.05):
+    t, amp = scintillator(ptype, plen, dt) # if slow, move this outside the function
+    phots = np.random.choice(t, nphots, p = amp)
+    return t, phots
+    
+
