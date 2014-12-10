@@ -47,7 +47,7 @@ def load_coefficients():
 
 coeff_dict = load_coefficients()  
 
-def scintillator(ptype, plen = 600, dt = 0.05):
+def scintillator(ptype, plen = 600, dt = 2.5):
     '''
     Generate a scintillator pulse.
    
