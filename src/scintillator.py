@@ -70,8 +70,8 @@ def scintillator(ptype, plen = 600, dt = 0.05):
         print 'ERROR! ptype not valid!'
         return 0
 
-def generate_pulse(t, amp, nphots):
-    phots = np.random.choice(t, nphots, p = amp)
-    return phots
+def generate_pulses(n, t, amp, nphots):
+    mypulses = [np.random.choice(t, nphots, p = amp) for i in range(n)]
+    return mypulses
     
 
