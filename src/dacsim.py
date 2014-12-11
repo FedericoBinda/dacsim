@@ -18,6 +18,7 @@ import pylab as pl
 import scintillator as sci
 import pmt
 import cable
+import digitize
 
 if __name__ == '__main__':
     dt = 0.5
@@ -36,6 +37,9 @@ if __name__ == '__main__':
     pl.figure(4) # noise
     wnoise = cable.apply_noise(new_y)
     pl.plot(t[:-1],wnoise)
+    pl.figure(5) # digitize
+    dig = digitize.digitize(wnoise,8,[-100,100])
+    pl.plot(t[:-1],dig)
     #pl.plot(t, amp_p)
     #pl.plot(t, amp_e)
     pl.show()
