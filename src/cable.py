@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import signal
 import os
 
 def get_cable_database():
@@ -23,16 +24,9 @@ def get_cable_database():
 
 cable_dict = get_cable_database()
 
-def apply_cable(signal, t, cable_length = 1, cable_type = 'RG58'):
-    try:
-        mask = (cable_dict[cable_type][0] == cable_length)
-    except KeyError:
-        print 'ERROR! cable type not present in database!'
-        return 0
-    if True not in mask: # NOTE: implement interpolation of length
-        print 'ERROR! cable length not present in database!'
-        return 0
-    print cable_dict[cable_type][1][mask]
-    tau = cable_dict[cable_type][1][mask][0]
-    cable_effect = np.exp(-t/tau)
-    return np.convolve(cable_effect, signal, 'same')
+def apply_cable(pulse, t, cutoff = 0.1):
+
+    sampling_freq = 1./(t[1]-t[0]) # GHz
+    Wn = (1./(2*np.pi))*(cutoff/sampling_freq)
+    b, a = signal.butter(1, Wn, 'low')
+    return signal.lfilter(b,a,pulse)
