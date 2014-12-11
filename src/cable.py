@@ -25,8 +25,12 @@ def get_cable_database():
 cable_dict = get_cable_database()
 
 def apply_cable(pulse, t, cutoff = 0.1):
-
     sampling_freq = 1./(t[1]-t[0]) # GHz
     Wn = (1./(2*np.pi))*(cutoff/sampling_freq)
     b, a = signal.butter(1, Wn, 'low')
     return signal.lfilter(b,a,pulse)
+
+def apply_noise(pulse, level = 0.4):
+    noise = np.random.normal(0,level,len(pulse))
+    return pulse + noise
+    
