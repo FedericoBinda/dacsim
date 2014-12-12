@@ -15,31 +15,58 @@ Simulate the data acquisition chain of a scintillator:
 '''
 
 import pylab as pl
-import scintillator as sci
-import pmt
-import cable
-import digitize
+import sys
+from scintillator import *
+from pmt import *
+from cable import *
+from digitize import *
+
+def read_input(fname):
+    f = open(fname,'r')
+    lines = f.readlines()
+    f.close()
+    inp_dict = {}
+    for line in lines:
+        if line[0] == '#':
+            continue
+        else:
+            spl = line.split()
+            if len(spl) == 2:
+                try:
+                    inp_dict[spl[0]] = int(spl[1])
+                except:
+                    try:
+                        inp_dict[spl[0]] = float(spl[1])
+                    except:
+                        inp_dict[spl[0]] = spl[1]
+    return inp_dict
 
 if __name__ == '__main__':
-    dt = 0.5
-    t, amp_p = sci.scintillator('proton',dt=dt)
-    t, amp_e = sci.scintillator('electron',dt=dt)
-    mypulses = sci.generate_pulses(1,t,amp_p,10000)
-    phots = mypulses[0]
-    pl.figure(1) # scintillator
-    hist, bins, patches = pl.hist(phots,bins=t,range=(min(t),max(t)))
-    pl.figure(2) # pmt
-    newhist=pmt.apply_pmt(mypulses[0],t)
-    pl.plot(t[:-1],newhist)
-    pl.figure(3) # cable
-    new_y = cable.apply_cable(newhist, t[:-1])
-    pl.plot(t[:-1],new_y)
-    pl.figure(4) # noise
-    wnoise = cable.apply_noise(new_y)
-    pl.plot(t[:-1],wnoise)
-    pl.figure(5) # digitize
-    dig = digitize.digitize(wnoise,8,[-100,100])
-    pl.plot(t[:-1],dig)
-    #pl.plot(t, amp_p)
-    #pl.plot(t, amp_e)
+    
+    # Read input file
+    # ------
+    try:
+        inp_dict = read_input(sys.argv[1])
+    except:
+        sys.exit('Missing input file')
+    print inp_dict
+    
+    # Calculate scintillator functions
+    # ------
+    scint_dict = {}
+    t, scint_dict['proton'] = scintillator('proton',dt=inp_dict['dt'],plen=inp_dict['plen'])
+    t, scint_dict['electron'] = amp_e = scintillator('electron',dt=inp_dict['dt'],plen=inp_dict['plen'])
+
+    # Generate pulses
+    # ------
+    nps = inp_dict['nps']
+    scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'])
+    pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
+    cable_pulses = [ apply_cable(p, t[:-1]) for p in pmt_pulses ]
+    pulses_noise = [ apply_noise(p) for p in cable_pulses ]
+    pulses_dig = [ digitize(p,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']]) for p in pulses_noise ]
+
+    # Plot first pulse
+    # ------
+    pl.plot(t[:-1],pulses_dig[0])
     pl.show()
