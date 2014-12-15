@@ -12,14 +12,63 @@ Simulate the data acquisition chain of a scintillator:
  - cable
  - digitizer
 
+Input file
+----------
+
+The code reads an input file in which the following variables MUST be defined:
+
+nps: the number of pulses to be simulated
+dt: the time step for the simulated pulses [ns]
+plen: the length of each pulse [ns]
+qeff: the quantum efficiency of the photomultiplier tube
+ptype: the type of particle that deposited energy in the scintillator (electron, proton)
+nphots: the average number of photons produced by each particle interaction
+bits: the number of bits of the digitizer
+minV: the minimum input level of the digitizer [a.u.]
+maxV: the maximum input level of the digitizer [a.u.]
+cutoff: the frequency cutoff of the cable [GHz]
+noise: the noise level [a.u.]
+output: the name of the output file (no extension)
+
+an example input file:
+
+nps 1
+dt 0.05
+plen 600
+qeff 0.26
+ptype electron
+nphots 10000
+bits 14
+minV -10
+maxV 10
+cutoff 0.2
+noise 0.01
+output myout
+
+Output
+------
+
+The codes generates a subdirectory called 'output' (if it does not exist) in
+the current directory and saves an output file with the name defined in the input
+and extension '.npy'.
+The file contains the list of the generated pulses.
+For information on how to read the file refer to the numpy.load function
 '''
 
 import pylab as pl
 import sys
+#import os
 from scintillator import *
 from pmt import *
 from cable import *
 from digitize import *
+
+def save_output(pulses,fname):
+    dirpath = os.getcwd() + '/output/'
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+    outfname = dirpath + fname
+    np.save(outfname, pulses)
 
 def read_input(fname):
     f = open(fname,'r')
@@ -62,9 +111,14 @@ if __name__ == '__main__':
     nps = inp_dict['nps']
     scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
     pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
-    cable_pulses = [ apply_cable(p, t[:-1]) for p in pmt_pulses ]
+    cable_pulses = [ apply_cable(p, t[:-1],inp_dict['cutoff']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']]) for p in pulses_noise ]
+
+    # Save pulses
+    # ------
+
+    save_output(pulses_dig,inp_dict['output'])
 
     # Plot first pulse
     # ------
