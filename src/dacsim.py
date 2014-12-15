@@ -5,7 +5,8 @@ dacsim
 Data Acquisition Chain Simulation
 ---------------------------------
 
-Simulate the data acquisition chain of a scintillator:
+Simulate the data acquisition chain of a scintillator.
+The following parts of the acquosition chain are modeled:
 
  - scintillation process
  - photomultiplier tube
@@ -17,32 +18,46 @@ Input file
 
 The code reads an input file in which the following variables MUST be defined:
 
-nps: the number of pulses to be simulated
-dt: the time step for the simulated pulses [ns]
-plen: the length of each pulse [ns]
-qeff: the quantum efficiency of the photomultiplier tube
-ptype: the type of particle that deposited energy in the scintillator (electron, proton)
-nphots: the average number of photons produced by each particle interaction
-bits: the number of bits of the digitizer
-minV: the minimum input level of the digitizer [a.u.]
-maxV: the maximum input level of the digitizer [a.u.]
-cutoff: the frequency cutoff of the cable [GHz]
-noise: the noise level [a.u.]
-output: the name of the output file (no extension)
+ - nps: the number of pulses to be simulated
+ - dt: the time step for the simulated pulses [ns]
+ - plen: the length of each pulse [ns]
+ - qeff: the quantum efficiency of the photomultiplier tube
+ - ptype: the type of particle that deposited energy in the scintillator (electron, proton)
+ - nphots: the average number of photons produced by each particle interaction
+ - bits: the number of bits of the digitizer
+ - minV: the minimum input level of the digitizer [a.u.]
+ - maxV: the maximum input level of the digitizer [a.u.]
+ - cutoff: the frequency cutoff of the cable [GHz]
+ - noise: the noise level [a.u.]
+ - output: the name of the output file (no extension)
 
-an example input file:
+example input file
+++++++++++++++++++
+
+#this line is a comment
 
 nps 1
+
 dt 0.05
+
 plen 600
+
 qeff 0.26
+
 ptype electron
+
 nphots 10000
+
 bits 14
+
 minV -10
+
 maxV 10
+
 cutoff 0.2
+
 noise 0.01
+
 output myout
 
 Output
@@ -63,6 +78,12 @@ from cable import *
 from digitize import *
 
 def save_output(pulses,fname):
+    '''Saves the output file
+    
+    Args:
+        pulses (list): list of simulated pulses
+        fname (str): name of the output file
+    '''
     dirpath = os.getcwd() + '/output/'
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
@@ -70,6 +91,14 @@ def save_output(pulses,fname):
     np.save(outfname, pulses)
 
 def read_input(fname):
+    '''Reads the input file and saves the parameters into a dictionary
+
+    Args:
+        fname (str): name of the input file
+
+    Returns:
+        inp_dict (dict): dictionary with the input parameters
+    '''
     f = open(fname,'r')
     lines = f.readlines()
     f.close()
