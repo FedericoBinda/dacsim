@@ -63,7 +63,7 @@ if __name__ == '__main__':
     scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
     pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
     cable_pulses = [ apply_cable(p, t[:-1]) for p in pmt_pulses ]
-    pulses_noise = [ apply_noise(p) for p in cable_pulses ]
+    pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']]) for p in pulses_noise ]
 
     # Plot first pulse
