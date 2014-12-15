@@ -49,7 +49,7 @@ coeff_dict = load_coefficients()
 
 def scintillator(ptype, plen = 600, dt = 0.05):
     '''
-    Generate a scintillator pulse.
+    Calculate the scintillator pulse shape.
    
     input:
       - ptype = type of pulse. Can be "electron" or "proton"
@@ -70,8 +70,33 @@ def scintillator(ptype, plen = 600, dt = 0.05):
         print 'ERROR! ptype not valid!'
         return 0
 
-def generate_pulses(n, t, amp, nphots):
-    mypulses = [np.random.choice(t, nphots, p = amp) for i in range(n)]
+def generate_pulses(n, t, amp, nphots, qeff = 1.):
+    '''
+    Generate scintillator pulses selcting random times
+    according to the scintillator pulse shape.
+
+    input:
+      - n = the number of pulses to be generated
+      - t = time axis of the scintillator pulse shape
+      - amp = amplitude of the scintillator pulse shape
+      - nphots = average number of photons in each pulse
+      - qeff = quantum efficiency of the PMT. Implemented here
+               and not in the pmt module to speed up the calculation
+     output:
+      - mypulses = list containing the simulated pulses. Each pulse
+                   consists of an array of times of photon production
+    '''
+    
+    # Randomize nphots according to poisson distribution and
+    # including the quantum efficiency qeff
+    # ------
+
+    mynphots = np.random.poisson(nphots*qeff, n)
+
+    # Generate the pulses list
+    # ------
+
+    mypulses = [np.random.choice(t, numphots, p = amp) for numphots in mynphots]
     return mypulses
     
 
