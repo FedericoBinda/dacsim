@@ -57,7 +57,6 @@ For information on how to read the file refer to the numpy.load function
 
 import pylab as pl
 import sys
-#import os
 from scintillator import *
 from pmt import *
 from cable import *
@@ -94,6 +93,7 @@ if __name__ == '__main__':
     
     # Read input file
     # ------
+
     try:
         inp_dict = read_input(sys.argv[1])
     except:
@@ -102,12 +102,14 @@ if __name__ == '__main__':
     
     # Calculate scintillator functions
     # ------
+
     scint_dict = {}
     t, scint_dict['proton'] = scintillator('proton',dt=inp_dict['dt'],plen=inp_dict['plen'])
     t, scint_dict['electron'] = amp_e = scintillator('electron',dt=inp_dict['dt'],plen=inp_dict['plen'])
 
     # Generate pulses
     # ------
+
     nps = inp_dict['nps']
     scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
     pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
