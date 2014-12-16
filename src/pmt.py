@@ -1,5 +1,6 @@
 import numpy as np
-from scipy import stats
+from scipy import stats, constants
+
 
 def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     '''PMT response modeled as gaussian'''
@@ -25,5 +26,10 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     # -------
 
     newpulse = np.convolve(hist,y)[:len(t)]
+
+    # Convert the pulse from n_electrons to current
+    # -----
     
+    newpulse *= constants.e / (dt*1.e-9)
+
     return newpulse

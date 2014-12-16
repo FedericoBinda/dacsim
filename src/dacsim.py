@@ -25,6 +25,7 @@ if __name__ == '__main__':
     phots = mypulses[0]
     pl.figure(1)
     hist, bins, patches = pl.hist(phots,bins=t,range=(min(t),max(t)))
+    pl.figure(2)
     newhist=pmt.apply_pmt(mypulses[0],t)
     pl.plot(t,newhist)
     pl.show()
