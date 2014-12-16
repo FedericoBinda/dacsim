@@ -31,34 +31,21 @@ The code reads an input file in which the following variables MUST be defined:
  - noise: the noise level [a.u.]
  - output: the name of the output file (no extension)
 
-example input file
-++++++++++++++++++
+example input file::
 
-#this line is a comment
-
-nps 1
-
-dt 0.05
-
-plen 600
-
-qeff 0.26
-
-ptype electron
-
-nphots 10000
-
-bits 14
-
-minV -10
-
-maxV 10
-
-cutoff 0.2
-
-noise 0.01
-
-output myout
+    #this line is a comment
+    nps 1
+    dt 0.05
+    plen 600
+    qeff 0.26
+    ptype electron
+    nphots 10000
+    bits 14
+    minV -10
+    maxV 10
+    cutoff 0.2
+    noise 0.01
+    output myout
 
 Output
 ------
