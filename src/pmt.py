@@ -1,9 +1,32 @@
+'''
+Pmt
+===
+
+module with the photomultiplier response function
+'''
+
 import numpy as np
 from scipy import stats, constants
 
 
 def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
-    '''PMT response modeled as gaussian'''
+    '''Adds the pmt response to a signal. 
+    The pmt response is modeled as a gaussian with amplitude depending on the
+    number of dynodes and the dynode gain.
+
+    Args:
+        pulse (numpy.array): the photon pulse from the scintillator
+        t (numpy.array): the time axis of the pulse
+
+    Kwargs:
+        ndynodes (int): the number of  dynodes
+        delta (float): the average gain of the dynodes
+        sigma (float): the time spread of the gaussian response [ns]
+
+    Returns:
+        newpulse (numpy.array): the current pulse produced by the pmt
+
+    '''
 
     # histogram the data
     # -------
