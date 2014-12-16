@@ -31,34 +31,21 @@ The code reads an input file in which the following variables MUST be defined:
  - noise: the noise level [a.u.]
  - output: the name of the output file (no extension)
 
-example input file
-++++++++++++++++++
+example input file::
 
-#this line is a comment
-
-nps 1
-
-dt 0.05
-
-plen 600
-
-qeff 0.26
-
-ptype electron
-
-nphots 10000
-
-bits 14
-
-minV -10
-
-maxV 10
-
-cutoff 0.2
-
-noise 0.01
-
-output myout
+    #this line is a comment
+    nps 1
+    dt 0.05
+    plen 600
+    qeff 0.26
+    ptype electron
+    nphots 10000
+    bits 14
+    minV -10
+    maxV 10
+    cutoff 0.2
+    noise 0.01
+    output myout
 
 Output
 ------
@@ -142,7 +129,7 @@ if __name__ == '__main__':
     nps = inp_dict['nps']
     scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
     pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
-    cable_pulses = [ apply_cable(p, t,inp_dict['cutoff']) for p in pmt_pulses ]
+    cable_pulses = [ apply_cable(p,t,inp_dict['cutoff']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']]) for p in pulses_noise ]
 
