@@ -1,13 +1,20 @@
+'''
+Scintillator
+============
+
+module with scintillator functions
+'''
+
 import os
 import numpy as np
 
 def load_coefficients():
-    '''
-    function that reads the scintillator coefficients from the 
+    '''Reads the scintillator coefficients from the 
     input file "<dacsim>/dat/scintillator.dat".
-
-     output:
-      - parsdict = dictionary with the parameters
+    
+    Returns:
+        parsdict (dict): dictionary with the parameters
+    
     '''
 
     # Find the file with coefficients
@@ -48,16 +55,19 @@ def load_coefficients():
 coeff_dict = load_coefficients()  
 
 def scintillator(ptype, plen = 600, dt = 0.05):
-    '''
-    Generate a scintillator pulse.
-   
-    input:
-      - ptype = type of pulse. Can be "electron" or "proton"
-      - plen = pulse length [ns]
-      - dt = time step [ns]
-     output:
-      - t = time vector
-      - amp = amplitude vector of the scintillation pulse
+    '''Calculates the scintillator pulse shape.
+    
+    Args:
+        ptype (str): type of pulse. Can be "electron" or "proton"
+
+    Kwargs:
+        plen (float): pulse length [ns]
+        dt (float): time step [ns]
+    
+    Returns:
+        t (numpy.array): time vector
+        amp (numpy.array): amplitude vector of the scintillation pulse
+
     '''
 
     t = np.arange(0,plen,dt) # time axis
@@ -70,8 +80,36 @@ def scintillator(ptype, plen = 600, dt = 0.05):
         print 'ERROR! ptype not valid!'
         return 0
 
-def generate_pulses(n, t, amp, nphots):
-    mypulses = [np.random.choice(t, nphots, p = amp) for i in range(n)]
+def generate_pulses(n, t, amp, nphots, qeff = 1.):
+    '''Generates scintillator pulses selcting random times
+    according to the scintillator pulse shape.
+    
+    Args:
+        n (int): the number of pulses to be generated
+        t (numpy.array): time axis of the scintillator pulse shape
+        amp (numpy.array): amplitude of the scintillator pulse shape
+        nphots (int): average number of photons in each pulse
+
+    Kwargs:
+        qeff (float): quantum efficiency of the PMT. Implemented here
+        and not in the pmt module to speed up the calculation
+    
+    Returns:
+        mypulses (list): list containing the simulated pulses. Each pulse
+        consists of an array of times of photon production
+    
+    '''
+    
+    # Randomize nphots according to poisson distribution and
+    # including the quantum efficiency qeff
+    # ------
+
+    mynphots = np.random.poisson(nphots*qeff, n)
+
+    # Generate the pulses list
+    # ------
+
+    mypulses = [np.random.choice(t, numphots, p = amp) for numphots in mynphots]
     return mypulses
     
 

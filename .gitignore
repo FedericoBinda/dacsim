@@ -1,2 +1,6 @@
 *.*~
 *.pyc
+*.inp
+*.npy
+output
+docs/_build
