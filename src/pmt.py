@@ -53,6 +53,6 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     # Convert the pulse from n_electrons to current
     # -----
     
-    newpulse *= constants.e / (dt*1.e-9)
+    newpulse *= constants.e / 1.e-9 
 
     return newpulse
