@@ -1,6 +1,35 @@
 import numpy as np
+from scipy import stats, constants
 
-def apply_pmt(pulse,t,tau=3.):
-    '''PMT modeled as a RC circuit with time constat tau'''
+
+def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
+    '''PMT response modeled as gaussian'''
+
+    # histogram the data
+    # -------
+
     hist,bin_edges = np.histogram(pulse,bins=t,range=(t.min(),t.max()))
-    return hist*(1 - np.exp(-t[:-1]/tau))
+
+    # add poisson noise due to electron multiplication statistics
+    # -------
+
+    hist *= np.random.poisson(delta,len(hist)) * delta**ndynodes
+
+    # Prepare gaussian response for convolution
+    # -------
+
+    dt = t[1]-t[0]
+    t2 = np.arange(-3*sigma,3*sigma,dt)
+    y = stats.norm.pdf(t2, loc=0, scale=sigma)
+
+    # Convolve pulse with gaussian response
+    # -------
+
+    newpulse = np.convolve(hist,y)[:len(t)]
+
+    # Convert the pulse from n_electrons to current
+    # -----
+    
+    newpulse *= constants.e / (dt*1.e-9)
+
+    return newpulse
