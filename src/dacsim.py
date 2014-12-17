@@ -36,6 +36,7 @@ The code reads an input file in which the following variables MUST be defined:
  - minV: the minimum input level of the digitizer [V]
  - maxV: the maximum input level of the digitizer [V]
  - sampf: the sampling frequency of the digitizer [GHz]
+ - fp: if 1, plot the first simulated pulse
 
 example input file::
     
@@ -74,6 +75,10 @@ example input file::
     minV -0.1
     maxV 1.2
     sampf 0.4
+
+    # plotting parameters
+
+    fp 1
 
 
 Output
@@ -174,6 +179,8 @@ if __name__ == '__main__':
 
     # Plot first pulse
     # ------
+    
+    if inp_dict['fp'] == 1:
 
-    pl.plot(t_dig,pulses_dig[0])
-    pl.show()
+        pl.plot(t_dig,pulses_dig[0])
+        pl.show()
