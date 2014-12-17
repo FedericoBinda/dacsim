@@ -88,8 +88,9 @@ The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
 The output format is:
-[t_dig,[p_1,p_2,...,p_nps]]
-where t_dig is the digitized time axis and p_1,p_2,..,p_nps are the digitized pulses.
+[t_dig,[p_1,p_2,...,p_nps],inp_dict]
+where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses
+and inp_dict is the input dictionary used to run the simulation
 For information on how to read the file refer to the 
 `numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
 
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     # Save pulses
     # ------
 
-    save_output([t_dig,pulses_dig],inp_dict['output'])
+    save_output([t_dig,pulses_dig,inp_dict],inp_dict['output'])
 
     # Plot first pulse
     # ------
