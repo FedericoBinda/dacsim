@@ -140,5 +140,5 @@ if __name__ == '__main__':
 
     # Plot first pulse
     # ------
-    pl.plot(t,pulses_dig[0])
+    pl.plot(t,pmt_pulses[0])
     pl.show()

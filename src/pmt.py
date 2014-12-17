@@ -28,15 +28,16 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
 
     '''
 
-    # histogram the data
-    # -------
-
-    hist,bin_edges = np.histogram(pulse,bins=t,range=(t.min(),t.max()))
-
+    
     # add poisson noise due to electron multiplication statistics
     # -------
 
-    hist *= np.random.poisson(delta,len(hist)) * delta**ndynodes
+    ww = np.random.poisson(delta,len(pulse)) * delta**(ndynodes-1)
+
+    # histogram the data
+    # -------
+
+    hist,bin_edges = np.histogram(pulse,bins=t,range=(t.min(),t.max()),weights=ww)
 
     # Prepare gaussian response for convolution
     # -------
