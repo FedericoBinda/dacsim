@@ -4,3 +4,4 @@
 *.npy
 output
 docs/_build
+build
