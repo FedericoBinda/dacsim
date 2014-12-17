@@ -45,6 +45,7 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     dt = t[1]-t[0]
     t2 = np.arange(-3*sigma,3*sigma,dt)
     y = stats.norm.pdf(t2, loc=0, scale=sigma)
+    y /= sum(y)
 
     # Convolve pulse with gaussian response
     # -------
@@ -54,6 +55,6 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     # Convert the pulse from n_electrons to current
     # -----
     
-    newpulse *= constants.e / 1.e-9 
+    newpulse *= constants.e / (dt*1.e-9)
 
     return newpulse
