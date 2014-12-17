@@ -161,14 +161,15 @@ if __name__ == '__main__':
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
+    t_dig = get_digitized_time(t,inp_dict['sampf'])
 
     # Save pulses
     # ------
 
-    save_output(pulses_dig,inp_dict['output'])
+    save_output([t_dig,pulses_dig],inp_dict['output'])
 
     # Plot first pulse
     # ------
 
-    pl.plot(pulses_dig[0][1],pulses_dig[0][0])
+    pl.plot(t_dig,pulses_dig[0])
     pl.show()

@@ -8,6 +8,27 @@ module with the function that takes care of the digitization of the pulse
 
 import numpy as np
 
+def get_digitized_time(t, sampfreq = 0.5):
+    '''Get the digitized time axis
+
+    Args:
+        t (numpy.array): the original time axis
+
+    Kwargs:
+        sampfreq (float): sampling frequency of the digitizer [GHz]
+
+    Returns:
+        newt (numpy.array): time axis of the digitized pulse
+
+    '''
+
+    dt = t[1] - t[0]
+    freq = 1. / dt
+    ratio = int(freq / sampfreq)
+
+    newt = t[::ratio]
+    return newt
+
 def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5):
     '''Digitize the signal
 
@@ -22,7 +43,6 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5):
 
     Returns:
         newpulse (numpy.array): digitized pulse
-        newt (numpy.array): time axis of the digitized pulse
 
     '''
 
@@ -32,6 +52,5 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5):
     
     codes = np.linspace(amprange[0],amprange[1],2**nbits)
     newpulse = np.digitize(pulse, codes)[::ratio]
-    newt = t[::ratio]
-    return newpulse, newt
+    return newpulse
     
