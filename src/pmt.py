@@ -9,7 +9,7 @@ import numpy as np
 from scipy import stats, constants
 
 
-def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
+def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.,transittime=100.):
     '''Adds the pmt response to a signal. 
     The pmt response is modeled as a gaussian with amplitude depending on the
     number of dynodes and the dynode gain.
@@ -43,14 +43,19 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.):
     # -------
 
     dt = t[1]-t[0]
-    t2 = np.arange(-3*sigma,3*sigma,dt)
+    t2 = np.arange(-5*sigma,5*sigma,dt)
     y = stats.norm.pdf(t2, loc=0, scale=sigma)
     y /= sum(y)
 
     # Convolve pulse with gaussian response
     # -------
 
-    newpulse = np.convolve(hist,y)[:len(t)]
+    newpulse = np.convolve(hist,y)#[:len(t)]
+
+    # Include transit time
+    # ------
+
+    newpulse = np.append(np.zeros(int(transittime/dt)),newpulse)[:len(t)]
 
     # Convert the pulse from n_electrons to current
     # -----
