@@ -19,33 +19,62 @@ Input file
 The code reads an input file in which the following variables MUST be defined:
 
  - nps: the number of pulses to be simulated
+ - ptype: the type of particle that deposited energy in the scintillator (electron, proton)
+ - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
  - plen: the length of each pulse [ns]
  - qeff: the quantum efficiency of the photomultiplier tube
- - ptype: the type of particle that deposited energy in the scintillator (electron, proton)
  - nphots: the average number of photons produced by each particle interaction
- - bits: the number of bits of the digitizer
- - minV: the minimum input level of the digitizer [a.u.]
- - maxV: the maximum input level of the digitizer [a.u.]
+ - ndyn: the number of dynodes in the pmt
+ - delta: the average gain of the dynodes
+ - sigma: the broadening of the pmt response
+ - tt: the transit time of the pmt
  - cutoff: the frequency cutoff of the cable [GHz]
- - noise: the noise level [a.u.]
- - output: the name of the output file (no extension)
+ - imp: the impedance of the cable [ohm]
+ - noise: the noise level [V]
+ - bits: the number of bits of the digitizer
+ - minV: the minimum input level of the digitizer [V]
+ - maxV: the maximum input level of the digitizer [V]
+ - sampf: the sampling frequency of the digitizer [GHz]
 
 example input file::
-
-    #this line is a comment
-    nps 1
-    dt 0.05
-    plen 600
-    qeff 0.26
+    
+    # input example for dacsim
+    # this line is a comment
+    
+    # general parameters
+    
+    nps 10
     ptype electron
-    nphots 10000
-    bits 14
-    minV -10
-    maxV 10
-    cutoff 0.2
-    noise 0.01
     output myout
+    
+    # scintillator parameters
+    
+    dt 0.05
+    plen 800
+    qeff 0.26
+    nphots 10000
+    
+    # pmt parameters
+    
+    ndyn 10
+    delta 4
+    sigma 5.2
+    tt 17.5
+    
+    # cable parameters
+    
+    cutoff 0.2
+    imp 50
+    noise 0.01
+    
+    # digitizer parameters
+    
+    bits 12
+    minV -0.1
+    maxV 1.2
+    sampf 0.4
+
 
 Output
 ------
@@ -128,10 +157,10 @@ if __name__ == '__main__':
 
     nps = inp_dict['nps']
     scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
-    pmt_pulses = [ apply_pmt(p,t) for p in scint_pulses ]  
-    cable_pulses = [ apply_cable(p,t,inp_dict['cutoff']) for p in pmt_pulses ]
+    pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in scint_pulses ]  
+    cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
-    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']]) for p in pulses_noise ]
+    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
 
     # Save pulses
     # ------
@@ -140,5 +169,6 @@ if __name__ == '__main__':
 
     # Plot first pulse
     # ------
+
     pl.plot(pulses_dig[0][1],pulses_dig[0][0])
     pl.show()
