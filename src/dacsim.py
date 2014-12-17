@@ -82,8 +82,12 @@ Output
 The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
-The file contains the list of the generated pulses.
-For information on how to read the file refer to the numpy.load function
+The output format is:
+[t_dig,[p_1,p_2,...,p_nps]]
+where t_dig is the digitized time axis and p_1,p_2,..,p_nps are the digitized pulses.
+For information on how to read the file refer to the 
+`numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
+
 '''
 
 import pylab as pl
