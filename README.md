@@ -32,5 +32,5 @@ The output files will be saved into this subdirectory.
 Documentation
 -------------
 
-See dacsim.readthedocs.org
+click [here](https://dacsim.readthedocs.org) to see the documentation on readthedocs
 
