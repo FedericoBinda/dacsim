@@ -20,7 +20,7 @@ Run
 
 cd build
 
-./dacsim.py <input>
+./dacsim.py input_file
 
 
 Output
