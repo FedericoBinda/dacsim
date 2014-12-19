@@ -98,7 +98,17 @@ For information on how to read the file refer to the
 '''
 
 import pylab as pl
-import sys
+import sys, os
+
+dacsim_path = os.path.dirname(os.path.realpath(__file__))
+
+# Add path to modules
+# ------
+
+modules_path = dacsim_path + '/src/'
+if os.path.isdir(modules_path):
+    sys.path.insert(0,modules_path)  
+
 from scintillator import *
 from pmt import *
 from cable import *
@@ -146,7 +156,16 @@ def read_input(fname):
     return inp_dict
 
 if __name__ == '__main__':
-    
+
+    # find path to dat files
+    # ------
+
+    dat_path = dacsim_path + '/dat/'
+    if not os.path.isdir(dat_path):      
+        dat_path = dacsim_path[-4] + '/dat/'
+
+    coeff_dict = load_coefficients(dat_path)  
+
     # Read input file
     # ------
 
@@ -156,12 +175,13 @@ if __name__ == '__main__':
         sys.exit('Missing input file')
     print inp_dict
     
+
     # Calculate scintillator functions
     # ------
 
     scint_dict = {}
-    t, scint_dict['proton'] = scintillator('proton',dt=inp_dict['dt'],plen=inp_dict['plen'])
-    t, scint_dict['electron'] = amp_e = scintillator('electron',dt=inp_dict['dt'],plen=inp_dict['plen'])
+    t, scint_dict['proton'] = scintillator('proton',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
+    t, scint_dict['electron'] = amp_e = scintillator('electron',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
 
     # Generate pulses
     # ------

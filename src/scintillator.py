@@ -8,10 +8,13 @@ module with scintillator functions
 import os
 import numpy as np
 
-def load_coefficients():
+def load_coefficients(dat_path):
     '''Reads the scintillator coefficients from the 
-    input file "<dacsim>/dat/scintillator.dat".
+    input file "<dat_path>/scintillator.dat".
     
+    Args:
+        dat_path (str): location of the scintillator.dat file
+
     Returns:
         parsdict (dict): dictionary with the parameters
     
@@ -20,8 +23,14 @@ def load_coefficients():
     # Find the file with coefficients
     # ------
 
-    mydir = os.path.dirname(__file__)
-    cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
+    try:
+        mydir = os.path.dirname(__file__)
+        cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
+        print cfilename
+    except NameError:
+        mydir = './src'
+        cfilename = os.path.join(mydir[:-4], 'dat/scintillator.dat')
+
     print 'Reading scintillator parameters from', cfilename
 
     # Read the parameters
@@ -52,13 +61,12 @@ def load_coefficients():
                 coeff_dict[now].append(map(float,spl))
     return coeff_dict
 
-coeff_dict = load_coefficients()  
-
-def scintillator(ptype, plen = 600, dt = 0.05):
+def scintillator(ptype, coeff_dict, plen = 600, dt = 0.05):
     '''Calculates the scintillator pulse shape.
     
     Args:
         ptype (str): type of pulse. Can be "electron" or "proton"
+        coeff_dict (dict): dictionary with scintillator coefficients
 
     Kwargs:
         plen (float): pulse length [ns]
