@@ -66,6 +66,7 @@ def scintillator(ptype, coeff_dict, plen = 600, dt = 0.05):
     
     Args:
         ptype (str): type of pulse. Can be "electron" or "proton"
+        coeff_dict (dict): dictionary with scintillator coefficients
 
     Kwargs:
         plen (float): pulse length [ns]

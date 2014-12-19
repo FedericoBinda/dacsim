@@ -107,8 +107,7 @@ dacsim_path = os.path.dirname(os.path.realpath(__file__))
 
 modules_path = dacsim_path + '/src/'
 if os.path.isdir(modules_path):
-    sys.path.insert(0,modules_path)
-print sys.path   
+    sys.path.insert(0,modules_path)  
 
 from scintillator import *
 from pmt import *
