@@ -96,8 +96,16 @@ For information on how to read the file refer to the
 `numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
 
 '''
+try:
+    import pylab as pl
+except:
+    print "Warning: pylab not found."
 
-import pylab as pl
+try:
+    import numpypy #used for run with pypy
+except:
+    pass
+
 import sys, os
 
 dacsim_path = os.path.dirname(os.path.realpath(__file__))
