@@ -9,5 +9,5 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
+configure_file(dat/scintillator.dat ${CMAKE_BINARY_DIR}/dat/scintillator.dat)
 add_subdirectory(src)
-add_subdirectory(dat)
