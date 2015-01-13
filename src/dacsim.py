@@ -50,6 +50,8 @@ example input file::
     
     nps 10
     ptype electron
+    cre 20000
+    crp 0
     output myout
     
     # scintillator parameters
@@ -115,6 +117,7 @@ from scintillator import *
 from pmt import *
 from cable import *
 from digitize import *
+from pileup import *
 
 def save_output(pulses,fname):
     '''Saves the output file
@@ -189,18 +192,26 @@ if __name__ == '__main__':
     # ------
 
     nps = inp_dict['nps']
+    tot_cr = inp_dict['cre'] + inp_dict['crp']
+
     if inp_dict['ptype'] == 'all':
-        tot_cr = inp_dict['cre'] + inp_dict['crp']
         nel = int(float((inp_dict['cre'])/float(tot_cr)) * nps)
         npr = int(float((inp_dict['crp'])/float(tot_cr)) * nps)
-        print nel,npr
         scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'],inp_dict['nphots'], inp_dict['qeff'])
         scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'],inp_dict['nphots'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
     else:
         scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
 
-    pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in scint_pulses ]  
+    # Apply pileup
+    # ------
+
+    pileup_pulses = ApplyPileup(scint_pulses,tot_cr,inp_dict['plen'])
+
+    # Apply acquisition chain modules
+    # ------
+
+    pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
