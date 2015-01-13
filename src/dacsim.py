@@ -21,6 +21,8 @@ The code reads an input file in which the following variables MUST be defined:
 
  - nps: the number of pulses to be simulated
  - ptype: the type of particle that deposited energy in the scintillator (electron, proton, all)
+ - cre: the electron countrate [Hz]
+ - crp: the proton countrate [Hz]
  - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
  - plen: the length of each pulse [ns]
