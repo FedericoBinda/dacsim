@@ -200,6 +200,7 @@ if __name__ == '__main__':
         scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'],inp_dict['nphots'], inp_dict['qeff'])
         scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'],inp_dict['nphots'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
+        np.random.shuffle(scint_pulses)
     else:
         scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
 
