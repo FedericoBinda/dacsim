@@ -1,4 +1,5 @@
 cython_add_module(scintillator scintillator.py)
+cython_add_module(pileup pileup.py)
 cython_add_module(pmt pmt.py)
 cython_add_module(cable cable.py)
 cython_add_module(digitize digitize.py)
