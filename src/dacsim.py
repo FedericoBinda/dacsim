@@ -187,7 +187,14 @@ if __name__ == '__main__':
     # ------
 
     nps = inp_dict['nps']
-    scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
+    if inp_dict['ptype'] = 'all':
+        tot_cr = inp_dict['cre'] + inp_dict['crp']
+        nel = int((inp_dict['cre']/tot_cr) * nps)
+        npr = int((inp_dict['crp']/tot_cr) * nps)
+        scint_pulses_e = generate_pulses(nel,t,'electron',inp_dict['nphots'], inp_dict['qeff'])
+        scint_pulses_p = generate_pulses(npr,t,'proton',inp_dict['nphots'], inp_dict['qeff'])
+    else:
+        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
     pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in scint_pulses ]  
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
