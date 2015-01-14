@@ -162,14 +162,10 @@ def read_input(fname):
 
 if __name__ == '__main__':
 
-    # find path to dat files
+    # Load dat files
     # ------
 
-    dat_path = dacsim_path + '/dat/'
-    if not os.path.isdir(dat_path):      
-        dat_path = dacsim_path[-4] + '/dat/'
-
-    coeff_dict = load_coefficients(dat_path)  
+    coeff_dict = load_coefficients()  
 
     # Read input file
     # ------
@@ -207,7 +203,7 @@ if __name__ == '__main__':
     # Apply pileup
     # ------
 
-    pileup_pulses = ApplyPileup(scint_pulses,tot_cr,inp_dict['plen'])
+    pileup_pulses = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
 
     # Apply acquisition chain modules
     # ------

@@ -7,7 +7,7 @@ module that simulates pileup effects
 
 import numpy as np
 
-def ApplyPileup(plist,rate,plen):
+def apply_pileup(plist,rate,plen):
     '''Applies pileup to the scintillator pulses.
 
     Args:

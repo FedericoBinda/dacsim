@@ -8,12 +8,9 @@ module with scintillator functions
 import os
 import numpy as np
 
-def load_coefficients(dat_path):
+def load_coefficients():
     '''Reads the scintillator coefficients from the 
-    input file "<dat_path>/scintillator.dat".
-    
-    Args:
-        dat_path (str): location of the scintillator.dat file
+    input file "dat/scintillator.dat".
 
     Returns:
         parsdict (dict): dictionary with the parameters
