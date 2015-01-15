@@ -8,12 +8,9 @@ module with scintillator functions
 import os
 import numpy as np
 
-def load_coefficients(dat_path):
+def load_coefficients():
     '''Reads the scintillator coefficients from the 
-    input file "<dat_path>/scintillator.dat".
-    
-    Args:
-        dat_path (str): location of the scintillator.dat file
+    input file "dat/scintillator.dat".
 
     Returns:
         parsdict (dict): dictionary with the parameters
@@ -26,7 +23,6 @@ def load_coefficients(dat_path):
     try:
         mydir = os.path.dirname(__file__)
         cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
-        print cfilename
     except NameError:
         mydir = './src'
         cfilename = os.path.join(mydir[:-4], 'dat/scintillator.dat')
@@ -88,7 +84,7 @@ def scintillator(ptype, coeff_dict, plen = 600, dt = 0.05):
         print 'ERROR! ptype not valid!'
         return 0
 
-def generate_pulses(n, t, amp, nphots, qeff = 1.):
+def generate_pulses(n, t, amp, energy, spectrum, k = 10., lc = 1., qeff = 1.):
     '''Generates scintillator pulses selcting random times
     according to the scintillator pulse shape.
     
@@ -96,9 +92,12 @@ def generate_pulses(n, t, amp, nphots, qeff = 1.):
         n (int): the number of pulses to be generated
         t (numpy.array): time axis of the scintillator pulse shape
         amp (numpy.array): amplitude of the scintillator pulse shape
-        nphots (int): average number of photons in each pulse
+        energy (numpy.array): energy axis [keVee]
+        spectrum (numpy.array): normalized spectrum
 
     Kwargs:
+        k (float): conversion from keVee to number of photons
+        lc (float): light collection efficiency
         qeff (float): quantum efficiency of the PMT. Implemented here
         and not in the pmt module to speed up the calculation
     
@@ -108,8 +107,19 @@ def generate_pulses(n, t, amp, nphots, qeff = 1.):
     
     '''
     
+    # Convert energy axis to nphots axis
+    # ------
+
+    nphots_axis = energy * k
+
+    # Generate nphots spectrum
+    # ------
+
+    nphots = np.random.choice(nphots_axis, n, p = spectrum)
+
     # Randomize nphots according to poisson distribution and
-    # including the quantum efficiency qeff
+    # including the quantum efficiency qeff and 
+    # the light collection efficiency lc
     # ------
 
     mynphots = np.random.poisson(nphots*qeff, n)

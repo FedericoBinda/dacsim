@@ -1,8 +1,14 @@
 dacsim
 ======
 
-Simulation of the data acquisition chain of a detector
+Simulation of the data acquisition chain of a detector.
 
+Required packages
+-----------------
+
+numpy (at least version 1.7.0)
+scipy
+matplotlib
 
 Build
 -----
@@ -20,7 +26,7 @@ Run
 
 cd build
 
-./dacsim.py input_file
+./dacsim input_file
 
 
 Output

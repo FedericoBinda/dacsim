@@ -4,8 +4,10 @@ modules
 .. toctree::
    :maxdepth: 4
 
-   cable
    dacsim
-   digitize
-   pmt
+   edist
    scintillator
+   pileup
+   pmt
+   cable
+   digitize

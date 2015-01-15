@@ -14,18 +14,25 @@ The following parts of the acquosition chain are modeled:
  - cable
  - digitizer
 
+The energy distribution and the decay times of the pulses
+can be defined in the dat files (see edist and scintillator modules).
+The simulation of pile-up events is also possible (pileup module).
+
 Input file
 ----------
 
 The code reads an input file in which the following variables MUST be defined:
 
  - nps: the number of pulses to be simulated
- - ptype: the type of particle that deposited energy in the scintillator (electron, proton)
+ - ptype: the type of particle that deposited energy in the scintillator (electron, proton, all)
+ - cre: the electron countrate [Hz]
+ - crp: the proton countrate [Hz]
  - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
  - plen: the length of each pulse [ns]
+ - lc: the light collection efficiency of the scintillator
  - qeff: the quantum efficiency of the photomultiplier tube
- - nphots: the average number of photons produced by each particle interaction
+ - k = conversion from keVee to number of photons
  - ndyn: the number of dynodes in the pmt
  - delta: the average gain of the dynodes
  - sigma: the broadening of the pmt response
@@ -48,15 +55,18 @@ example input file::
     
     nps 10
     ptype electron
+    cre 20000
+    crp 0
     output myout
     
     # scintillator parameters
     
     dt 0.05
     plen 800
+    lc 0.7
     qeff 0.26
-    nphots 10000
-    
+    k 10.
+
     # pmt parameters
     
     ndyn 10
@@ -113,6 +123,8 @@ from scintillator import *
 from pmt import *
 from cable import *
 from digitize import *
+from pileup import *
+from edist import *
 
 def save_output(pulses,fname):
     '''Saves the output file
@@ -157,14 +169,11 @@ def read_input(fname):
 
 if __name__ == '__main__':
 
-    # find path to dat files
+    # Load dat files
     # ------
 
-    dat_path = dacsim_path + '/dat/'
-    if not os.path.isdir(dat_path):      
-        dat_path = dacsim_path[-4] + '/dat/'
-
-    coeff_dict = load_coefficients(dat_path)  
+    coeff_dict = load_coefficients()  
+    energy, intensity = load_energy_spectrum()
 
     # Read input file
     # ------
@@ -187,8 +196,27 @@ if __name__ == '__main__':
     # ------
 
     nps = inp_dict['nps']
-    scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
-    pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in scint_pulses ]  
+    tot_cr = inp_dict['cre'] + inp_dict['crp']
+
+    if inp_dict['ptype'] == 'all':
+        nel = int(float((inp_dict['cre'])/float(tot_cr)) * nps)
+        npr = int(float((inp_dict['crp'])/float(tot_cr)) * nps)
+        scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
+        np.random.shuffle(scint_pulses)
+    else:
+        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+
+    # Apply pileup
+    # ------
+
+    pileup_pulses = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
+
+    # Apply acquisition chain modules
+    # ------
+
+    pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
