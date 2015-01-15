@@ -118,6 +118,7 @@ from pmt import *
 from cable import *
 from digitize import *
 from pileup import *
+from edist import *
 
 def save_output(pulses,fname):
     '''Saves the output file
@@ -166,6 +167,7 @@ if __name__ == '__main__':
     # ------
 
     coeff_dict = load_coefficients()  
+    energy, intensity = load_energy_spectrum()
 
     # Read input file
     # ------
@@ -193,12 +195,12 @@ if __name__ == '__main__':
     if inp_dict['ptype'] == 'all':
         nel = int(float((inp_dict['cre'])/float(tot_cr)) * nps)
         npr = int(float((inp_dict['crp'])/float(tot_cr)) * nps)
-        scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'],inp_dict['nphots'], inp_dict['qeff'])
-        scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'],inp_dict['nphots'], inp_dict['qeff'])
+        scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
         np.random.shuffle(scint_pulses)
     else:
-        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']],inp_dict['nphots'], inp_dict['qeff'])
+        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
 
     # Apply pileup
     # ------

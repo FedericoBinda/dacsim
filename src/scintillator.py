@@ -85,7 +85,7 @@ def scintillator(ptype, coeff_dict, plen = 600, dt = 0.05):
         print 'ERROR! ptype not valid!'
         return 0
 
-def generate_pulses(n, t, amp, nphots, qeff = 1.):
+def generate_pulses(n, t, amp, energy, spectrum, k = 10., lc = 1., qeff = 1.):
     '''Generates scintillator pulses selcting random times
     according to the scintillator pulse shape.
     
@@ -105,8 +105,19 @@ def generate_pulses(n, t, amp, nphots, qeff = 1.):
     
     '''
     
+    # Convert energy axis to nphots axis
+    # ------
+
+    nphots_axis = energy * k
+
+    # Generate nphots spectrum
+    # ------
+
+    nphots = np.random.choice(nphots_axis, n, p = spectrum)
+
     # Randomize nphots according to poisson distribution and
-    # including the quantum efficiency qeff
+    # including the quantum efficiency qeff and 
+    # the light collection efficiency lc
     # ------
 
     mynphots = np.random.poisson(nphots*qeff, n)
