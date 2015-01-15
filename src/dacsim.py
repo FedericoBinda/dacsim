@@ -14,6 +14,10 @@ The following parts of the acquosition chain are modeled:
  - cable
  - digitizer
 
+The energy distribution and the decay times of the pulses
+can be defined in the dat files (see edist and scintillator modules).
+The simulation of pile-up events is also possible (pileup module).
+
 Input file
 ----------
 

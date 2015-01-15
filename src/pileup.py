@@ -2,13 +2,13 @@
 Pileup
 ======
 
-module that simulates pileup effects
+module that simulates pile-up effects
 '''
 
 import numpy as np
 
 def apply_pileup(plist,rate,plen):
-    '''Applies pileup to the scintillator pulses.
+    '''Applies pile-up to the scintillator pulses.
 
     Args:
         plist (list): the list of scintillator pulses.
