@@ -23,7 +23,6 @@ def load_coefficients():
     try:
         mydir = os.path.dirname(__file__)
         cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
-        print cfilename
     except NameError:
         mydir = './src'
         cfilename = os.path.join(mydir[:-4], 'dat/scintillator.dat')
@@ -93,9 +92,12 @@ def generate_pulses(n, t, amp, energy, spectrum, k = 10., lc = 1., qeff = 1.):
         n (int): the number of pulses to be generated
         t (numpy.array): time axis of the scintillator pulse shape
         amp (numpy.array): amplitude of the scintillator pulse shape
-        nphots (int): average number of photons in each pulse
+        energy (numpy.array): energy axis [keVee]
+        spectrum (numpy.array): normalized spectrum
 
     Kwargs:
+        k (float): conversion from keVee to number of photons
+        lc (float): light collection efficiency
         qeff (float): quantum efficiency of the PMT. Implemented here
         and not in the pmt module to speed up the calculation
     

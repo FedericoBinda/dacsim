@@ -5,6 +5,7 @@ modules
    :maxdepth: 4
 
    dacsim
+   edist
    scintillator
    pileup
    pmt

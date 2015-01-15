@@ -7,6 +7,7 @@ of the pulses.
 '''
 
 import numpy as np
+import os
 
 def load_energy_spectrum():
     '''Reads the spectrum from the 
@@ -24,7 +25,6 @@ def load_energy_spectrum():
     try:
         mydir = os.path.dirname(__file__)
         cfilename = os.path.join(mydir[:-3], 'dat/spectrum.dat')
-        print cfilename
     except NameError:
         mydir = './src'
         cfilename = os.path.join(mydir[:-4], 'dat/spectrum.dat')

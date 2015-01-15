@@ -26,8 +26,9 @@ The code reads an input file in which the following variables MUST be defined:
  - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
  - plen: the length of each pulse [ns]
+ - lc: the light collection efficiency of the scintillator
  - qeff: the quantum efficiency of the photomultiplier tube
- - nphots: the average number of photons produced by each particle interaction
+ - k = conversion from keVee to number of photons
  - ndyn: the number of dynodes in the pmt
  - delta: the average gain of the dynodes
  - sigma: the broadening of the pmt response
@@ -58,9 +59,10 @@ example input file::
     
     dt 0.05
     plen 800
+    lc 0.7
     qeff 0.26
-    nphots 10000
-    
+    k 10.
+
     # pmt parameters
     
     ndyn 10
@@ -195,12 +197,12 @@ if __name__ == '__main__':
     if inp_dict['ptype'] == 'all':
         nel = int(float((inp_dict['cre'])/float(tot_cr)) * nps)
         npr = int(float((inp_dict['crp'])/float(tot_cr)) * nps)
-        scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
-        scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
         np.random.shuffle(scint_pulses)
     else:
-        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy, spectrum, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
+        scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy, intensity, inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
 
     # Apply pileup
     # ------

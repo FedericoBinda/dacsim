@@ -1,3 +1,4 @@
+cython_add_module(edist edist.py)
 cython_add_module(scintillator scintillator.py)
 cython_add_module(pileup pileup.py)
 cython_add_module(pmt pmt.py)
