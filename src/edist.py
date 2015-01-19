@@ -9,7 +9,7 @@ of the pulses.
 import numpy as np
 import os
 
-def load_energy_spectrum():
+def load_energy_spectrum(which):
     '''Reads the spectrum from the 
     input file "dat/spectrum.dat".
 
@@ -22,12 +22,14 @@ def load_energy_spectrum():
     # Find the file with coefficients
     # ------
 
+    fname = 'dat/spectrum_' + which + '.dat'
+
     try:
         mydir = os.path.dirname(__file__)
-        cfilename = os.path.join(mydir[:-3], 'dat/spectrum.dat')
+        cfilename = os.path.join(mydir[:-3], fname)
     except NameError:
         mydir = './src'
-        cfilename = os.path.join(mydir[:-4], 'dat/spectrum.dat')
+        cfilename = os.path.join(mydir[:-4], fname)
 
     print 'Reading energy spectrum from', cfilename
 
