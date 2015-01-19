@@ -11,7 +11,10 @@ import os
 
 def load_energy_spectrum(which):
     '''Reads the spectrum from the 
-    input file "dat/spectrum.dat".
+    input file "dat/spectrum_<which>.dat".
+
+    Args:
+        which (string): particle for which the spectrum has to be loaded (electron, proton)
 
     Returns:
         energy (numpy.array): energy axis [keVee]
