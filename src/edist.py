@@ -2,19 +2,22 @@
 Edist
 =====
 
-Module that takes care of the energy distribution
-of the pulses.
+Module that takes care of the energy distribution of the pulses.
 '''
 
 import numpy as np
 import os
 
-def load_energy_spectrum():
+def load_energy_spectrum(which):
     '''Reads the spectrum from the 
-    input file "dat/spectrum.dat".
+    input file "dat/spectrum_<which>.dat".
+
+    Args:
+        which (string): particle for which the spectrum has to be loaded (electron, proton)
 
     Returns:
         energy (numpy.array): energy axis [keVee]
+
         intensity (numpy.array): normalized spectrum
     
     '''
@@ -22,12 +25,14 @@ def load_energy_spectrum():
     # Find the file with coefficients
     # ------
 
+    fname = 'dat/spectrum_' + which + '.dat'
+
     try:
         mydir = os.path.dirname(__file__)
-        cfilename = os.path.join(mydir[:-3], 'dat/spectrum.dat')
+        cfilename = os.path.join(mydir[:-3], fname)
     except NameError:
         mydir = './src'
-        cfilename = os.path.join(mydir[:-4], 'dat/spectrum.dat')
+        cfilename = os.path.join(mydir[:-4], fname)
 
     print 'Reading energy spectrum from', cfilename
 

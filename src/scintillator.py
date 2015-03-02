@@ -62,14 +62,17 @@ def scintillator(ptype, coeff_dict, plen = 600, dt = 0.05):
     
     Args:
         ptype (str): type of pulse. Can be "electron" or "proton"
+
         coeff_dict (dict): dictionary with scintillator coefficients
 
     Kwargs:
         plen (float): pulse length [ns]
+
         dt (float): time step [ns]
     
     Returns:
         t (numpy.array): time vector
+
         amp (numpy.array): amplitude vector of the scintillation pulse
 
     '''
@@ -90,14 +93,20 @@ def generate_pulses(n, t, amp, energy, spectrum, k = 10., lc = 1., qeff = 1.):
     
     Args:
         n (int): the number of pulses to be generated
+
         t (numpy.array): time axis of the scintillator pulse shape
+
         amp (numpy.array): amplitude of the scintillator pulse shape
+
         energy (numpy.array): energy axis [keVee]
+
         spectrum (numpy.array): normalized spectrum
 
     Kwargs:
         k (float): conversion from keVee to number of photons
+
         lc (float): light collection efficiency
+
         qeff (float): quantum efficiency of the PMT. Implemented here
         and not in the pmt module to speed up the calculation
     
@@ -122,7 +131,7 @@ def generate_pulses(n, t, amp, energy, spectrum, k = 10., lc = 1., qeff = 1.):
     # the light collection efficiency lc
     # ------
 
-    mynphots = np.random.poisson(nphots*qeff, n)
+    mynphots = np.random.poisson(nphots*qeff*lc, n)
 
     # Generate the pulses list
     # ------

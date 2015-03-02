@@ -10,5 +10,6 @@ include_directories(
     )
 
 configure_file(dat/scintillator.dat ${CMAKE_BINARY_DIR}/dat/scintillator.dat)
-configure_file(dat/spectrum.dat ${CMAKE_BINARY_DIR}/dat/spectrum.dat)
+configure_file(dat/spectrum_electron.dat ${CMAKE_BINARY_DIR}/dat/spectrum_electron.dat)
+configure_file(dat/spectrum_proton.dat ${CMAKE_BINARY_DIR}/dat/spectrum_proton.dat)
 add_subdirectory(src)

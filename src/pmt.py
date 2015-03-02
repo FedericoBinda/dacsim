@@ -16,11 +16,14 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.,transittime=100.):
 
     Args:
         pulse (numpy.array): the photon pulse from the scintillator
+
         t (numpy.array): the time axis of the pulse
 
     Kwargs:
         ndynodes (int): the number of  dynodes
+
         delta (float): the average gain of the dynodes
+
         sigma (float): the time spread of the gaussian response [ns]
 
     Returns:
