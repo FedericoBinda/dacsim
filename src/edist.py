@@ -2,8 +2,7 @@
 Edist
 =====
 
-Module that takes care of the energy distribution
-of the pulses.
+Module that takes care of the energy distribution of the pulses.
 '''
 
 import numpy as np
@@ -18,6 +17,7 @@ def load_energy_spectrum(which):
 
     Returns:
         energy (numpy.array): energy axis [keVee]
+
         intensity (numpy.array): normalized spectrum
     
     '''

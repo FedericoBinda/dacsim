@@ -12,7 +12,9 @@ def apply_pileup(plist,rate,plen):
 
     Args:
         plist (list): the list of scintillator pulses.
+
         rate (float): the total count rate
+
         plen (float): pulse length [ns]
 
     Returns:

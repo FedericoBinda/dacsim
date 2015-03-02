@@ -34,11 +34,14 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5):
 
     Args:
         pulse (numpy.array): the input signal
+
         t (numpy.array): the time axis
 
     Kwargs:
         nbits (int): resolution of the digitizer [bit]
+
         amprange (list): amplitude range of the digitizer [max,min] [V]
+
         sampfreq (float): sampling frequency of the digitizer [GHz]
 
     Returns:

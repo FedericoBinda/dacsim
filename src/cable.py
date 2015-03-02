@@ -13,10 +13,12 @@ def apply_cable(pulse, t, cutoff = 0.1, impedance = 50):
 
     Args:
         pulse (numpy.array): input pulse from pmt
+
         t (numpy.array): time axis of the pulse
 
     Kwargs:
         cutoff (float): cutoff of the filter [GHz]
+
         impedance (float): impedance of the cable [ohm]
 
     Returns:

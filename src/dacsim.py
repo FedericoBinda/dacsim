@@ -131,6 +131,7 @@ def save_output(pulses,fname):
     
     Args:
         pulses (list): list of simulated pulses
+
         fname (str): name of the output file
     '''
     dirpath = os.getcwd() + '/output/'
