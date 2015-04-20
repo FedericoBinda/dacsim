@@ -35,7 +35,7 @@ def apply_pmt(pulse,t,ndynodes=10,delta=4,sigma=5.,transittime=100.):
     # add poisson noise due to electron multiplication statistics
     # -------
 
-    ww = np.random.poisson(delta,len(pulse)) * delta**(ndynodes-1)
+    ww = (np.random.poisson(delta-1,len(pulse))+1) * delta**(ndynodes-1)
 
     # histogram the data
     # -------
