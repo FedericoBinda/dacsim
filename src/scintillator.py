@@ -20,12 +20,16 @@ def load_coefficients():
     # Find the file with coefficients
     # ------
 
-    try:
-        mydir = os.path.dirname(__file__)
-        cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
-    except NameError:
-        mydir = './src'
-        cfilename = os.path.join(mydir[:-4], 'dat/scintillator.dat')
+    
+    mydir = os.getcwd()
+    cfilename = os.path.join(mydir, 'dat/scintillator.dat')
+    if not os.path.isfile(cfilename):
+        try:
+            mydir = os.path.dirname(__file__)
+            cfilename = os.path.join(mydir[:-3], 'dat/scintillator.dat')
+        except NameError:
+            mydir = './src'
+            cfilename = os.path.join(mydir[:-4], 'dat/scintillator.dat')
 
     print 'Reading scintillator parameters from', cfilename
 
