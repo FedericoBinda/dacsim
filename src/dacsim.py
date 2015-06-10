@@ -248,5 +248,5 @@ if __name__ == '__main__':
     if inp_dict['fp'] == 1:
 
         pl.plot(t_dig,pulses_dig[0])
-        pl.xlable('t [ns]')
+        pl.xlabel('t [ns]')
         pl.show()
