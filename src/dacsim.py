@@ -44,6 +44,9 @@ The code reads an input file in which the following variables MUST be defined:
  - minV: the minimum input level of the digitizer [V]
  - maxV: the maximum input level of the digitizer [V]
  - sampf: the sampling frequency of the digitizer [GHz]
+ - th_on: turn the digitizer's trigger threshold on (1) or off (0)
+ - th_lvl: trigger threshold level
+ - pretrig_samp: number of pretrigger samples
  - fp: if 1, plot the first simulated pulse
 
 example input file::
@@ -86,6 +89,9 @@ example input file::
     minV -0.1
     maxV 1.2
     sampf 0.4
+    th_on = 1
+    th_lvl = 50
+    pretrig_samp 64
 
     # plotting parameters
 
@@ -226,7 +232,8 @@ if __name__ == '__main__':
     pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
-    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
+    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'],
+                            inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
     t_dig = get_digitized_time(t,inp_dict['sampf'])
 
     # Save pulses
