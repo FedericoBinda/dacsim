@@ -7,26 +7,8 @@ module with the function that takes care of the digitization of the pulse
 '''
 
 import numpy as np
-from cable import apply_noise
 
-def get_digitized_time(pulse, sampfreq = 0.5):
-    '''Get the digitized time axis
-
-    Args:
-        pulse (numpy.array): the digitized pulse
-
-    Kwargs:
-        sampfreq (float): sampling frequency of the digitizer [GHz]
-
-    Returns:
-        newt (numpy.array): time axis of the digitized pulse [ns]
-
-    '''
-
-    newt = np.arange(0,float(len(pulse))*sampfreq,sampfreq)
-    return newt
-
-def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold = False, threshold = 50, pretriggersamples = 64, noise = 0.02):
+def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, samples = 256, do_threshold = False, threshold = 50, pretriggersamples = 64,noise = 0.02):
     '''Digitize the signal
 
     Args:
@@ -40,6 +22,8 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold =
         amprange (list): amplitude range of the digitizer [max,min] [V]
 
         sampfreq (float): sampling frequency of the digitizer [GHz]
+
+        samples = number of samples to acquire
 
         do_threshold (bool): activate trigger threshold effect
         
@@ -79,6 +63,13 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold =
         
     else:
         newpulse = newpulse[::ratio]
-    
+
+    diff2 = samples - len(newpulse)
+    if diff2 < 0:
+        newpulse = newpulse[:samples]
+    elif diff2 > 0:
+        to_append = np.digitize(np.random.normal(0,noise,diff),codes) 
+        newpulse = np.append(newpulse,to_append)
+
     return newpulse
     
