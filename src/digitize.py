@@ -68,6 +68,8 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold =
 
     if do_threshold:
         baseline = -amprange[0]*2**nbits/(amprange[1]-amprange[0])
+        if max(newpulse) < baseline+threshold:
+            return
         trigger = np.where(newpulse > baseline+threshold)[0][0]
         pretrig = newpulse[trigger::-ratio][::-1]
         diff = pretriggersamples - len(pretrig)
