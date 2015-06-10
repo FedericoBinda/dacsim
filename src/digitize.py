@@ -9,25 +9,21 @@ module with the function that takes care of the digitization of the pulse
 import numpy as np
 from cable import apply_noise
 
-def get_digitized_time(t, sampfreq = 0.5):
+def get_digitized_time(pulse, sampfreq = 0.5):
     '''Get the digitized time axis
 
     Args:
-        t (numpy.array): the original time axis
+        pulse (numpy.array): the digitized pulse
 
     Kwargs:
         sampfreq (float): sampling frequency of the digitizer [GHz]
 
     Returns:
-        newt (numpy.array): time axis of the digitized pulse
+        newt (numpy.array): time axis of the digitized pulse [ns]
 
     '''
 
-    dt = t[1] - t[0]
-    freq = 1. / dt
-    ratio = int(freq / sampfreq)
-
-    newt = t[::ratio]
+    newt = np.arange(0,float(len(pulse))*sampfreq,sampfreq)
     return newt
 
 def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold = False, threshold = 50, pretriggersamples = 64, noise = 0.02):
@@ -68,16 +64,18 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, do_threshold =
 
     if do_threshold:
         baseline = -amprange[0]*2**nbits/(amprange[1]-amprange[0])
-        if max(newpulse) < baseline+threshold:
+        try:
+            trigger = np.where(newpulse > baseline+threshold)[0][0]
+        except IndexError:
             return
-        trigger = np.where(newpulse > baseline+threshold)[0][0]
         pretrig = newpulse[trigger::-ratio][::-1]
         diff = pretriggersamples - len(pretrig)
         if diff < 0:
             pretrig = pretrig[-diff:]
         elif diff > 0:
-            pretrig = np.append(np.random.normal(0,noise,diff),pretrig)
-        newpulse = np.append(pretrig,newpulse[trigger+ratio::ratio]
+            to_append = np.digitize(np.random.normal(0,noise,diff),codes)
+            pretrig = np.append(to_append,pretrig)
+        newpulse = np.append(pretrig,newpulse[trigger+ratio::ratio])
         
     else:
         newpulse = newpulse[::ratio]

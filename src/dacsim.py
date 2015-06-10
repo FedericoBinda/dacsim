@@ -234,7 +234,8 @@ if __name__ == '__main__':
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'],
                             inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
-    t_dig = get_digitized_time(t,inp_dict['sampf'])
+    pulses_dig = [ p for p in pulses_dig if p is not None ]
+    t_dig = get_digitized_time(pulses_dig[0],inp_dict['sampf'])
 
     # Save pulses
     # ------
@@ -247,4 +248,5 @@ if __name__ == '__main__':
     if inp_dict['fp'] == 1:
 
         pl.plot(t_dig,pulses_dig[0])
+        pl.xlable('t [ns]')
         pl.show()
