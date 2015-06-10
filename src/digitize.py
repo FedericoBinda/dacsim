@@ -68,7 +68,7 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, samples = 256,
     if diff2 < 0:
         newpulse = newpulse[:samples]
     elif diff2 > 0:
-        to_append = np.digitize(np.random.normal(0,noise,diff),codes) 
+        to_append = np.digitize(np.random.normal(0,noise,diff2),codes) 
         newpulse = np.append(newpulse,to_append)
 
     return newpulse
