@@ -29,7 +29,6 @@ The code reads an input file in which the following variables MUST be defined:
  - crp: the proton countrate [Hz]
  - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
- - plen: the length of each pulse [ns]
  - lc: the light collection efficiency of the scintillator
  - qeff: the quantum efficiency of the photomultiplier tube
  - k = conversion from keVee to number of photons
@@ -66,7 +65,6 @@ example input file::
     # scintillator parameters
     
     dt 0.05
-    plen 800
     lc 0.7
     qeff 0.26
     k 10.
@@ -107,8 +105,9 @@ The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
 The output format is:
-[t_dig,[p_1,p_2,...,p_nps],inp_dict]
-where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses
+[t_dig,[p_1,p_2,...,p_nps],pileup_log,inp_dict]
+where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses,
+pileup_log is a list containing the number of pile-up pulses in each event,
 and inp_dict is the input dictionary used to run the simulation
 For information on how to read the file refer to the 
 `numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
@@ -204,8 +203,9 @@ if __name__ == '__main__':
     # ------
 
     scint_dict = {}
-    t, scint_dict['proton'] = scintillator('proton',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
-    t, scint_dict['electron'] = amp_e = scintillator('electron',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
+    plen = float(inp_dict['samples'])/inp_dict['sampf']
+    t, scint_dict['proton'] = scintillator('proton',coeff_dict,dt=inp_dict['dt'],plen=plen)
+    t, scint_dict['electron'] = scintillator('electron',coeff_dict,dt=inp_dict['dt'],plen=plen)
 
     # Generate pulses
     # ------
@@ -226,7 +226,7 @@ if __name__ == '__main__':
     # Apply pileup
     # ------
 
-    pileup_pulses, pileup_log = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
+    pileup_pulses, pileup_log = apply_pileup(scint_pulses,tot_cr,plen)
 
     # Apply acquisition chain modules
     # ------
