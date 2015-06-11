@@ -31,7 +31,7 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, samples = 256,
 
         pretriggersamples (int): number of samples before the trigger
 
-        mnoise (float): noise level [mV]
+        noise (float): noise level [mV]
 
     Returns:
         newpulse (numpy.array): digitized pulse

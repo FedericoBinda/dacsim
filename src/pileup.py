@@ -27,12 +27,21 @@ def apply_pileup(plist,rate,plen):
     tint_array = np.random.exponential(1./rate,n-1) # time intervals
     i = 0
     t_0 = 0
+    counter = 0
+    pileup_log = []
     for tint in tint_array:
         if (tint + t_0) < plen*1e-9:
             plist[i] = np.append(plist[i],plist[i+1]+(tint+t_0)*1e9)
             del plist[i+1]
             t_0 += tint
+            counter += 1
         else:
             i += 1
             t_0 = 0
-    return plist
+            pileup_log.append(counter)
+            counter = 0
+
+    if len(plist) - len(pileup_log) == 1:
+        pileup_log.append(counter)
+            
+    return plist, pileup_log

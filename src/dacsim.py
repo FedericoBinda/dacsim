@@ -226,7 +226,7 @@ if __name__ == '__main__':
     # Apply pileup
     # ------
 
-    pileup_pulses = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
+    pileup_pulses, pileup_log = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
 
     # Apply acquisition chain modules
     # ------
@@ -236,13 +236,14 @@ if __name__ == '__main__':
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'], inp_dict['samples'],
                             inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
+    pileup_log = [ n for n,p in zip(pileup_log,pulses_dig) if p is not None]
     pulses_dig = [ p for p in pulses_dig if p is not None ]
     t_dig = np.arange(0,float(inp_dict['samples'])/inp_dict['sampf'],1./inp_dict['sampf'])
 
     # Save pulses
     # ------
 
-    save_output([t_dig,pulses_dig,inp_dict],inp_dict['output'])
+    save_output([t_dig,pulses_dig,pileup_log,inp_dict],inp_dict['output'])
 
     # Plot first pulse
     # ------
