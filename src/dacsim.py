@@ -108,6 +108,7 @@ The output format is:
 [t_dig,[p_1,p_2,...,p_nps],pileup_log,inp_dict,coeff_dict,energy,intensity]
 where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses,
 pileup_log is a list containing the number of pile-up pulses in each event,
+time_int is an array containing the time intervals between pulses,
 inp_dict is the input dictionary used to run the simulation, coeff_dict is the dictionary
 with the scintillator pulse shape coefficients, energy and intensity are the dictionaries containing the
 energy distributions for electrons and protons.
@@ -238,7 +239,7 @@ if __name__ == '__main__':
 
     print 'Applying pile-up. . .'
 
-    pileup_pulses, pileup_log = apply_pileup(scint_pulses,tot_cr,plen)
+    pileup_pulses, pileup_log, time_int = apply_pileup(scint_pulses,tot_cr,plen)
 
     # Apply acquisition chain modules
     # ------
@@ -263,7 +264,7 @@ if __name__ == '__main__':
     # ------
 
     print 'Saving to output file. . .'
-    save_output([t_dig,pulses_dig,pileup_log,inp_dict,coeff_dict,energy,intensity],inp_dict['output'])
+    save_output([t_dig,pulses_dig,pileup_log,time_int,inp_dict,coeff_dict,energy,intensity],inp_dict['output'])
     
     # Plot first pulse
     # ------

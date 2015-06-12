@@ -44,4 +44,4 @@ def apply_pileup(plist,rate,plen):
     if len(plist) - len(pileup_log) == 1:
         pileup_log.append(counter)
             
-    return plist, pileup_log
+    return plist, pileup_log, tint_array
