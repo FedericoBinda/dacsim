@@ -178,6 +178,11 @@ def read_input(fname):
     return inp_dict
 
 if __name__ == '__main__':
+    
+    # Print information
+
+    print '- Welcome to DACSIM (Data ACquisition SIMulation) -'
+    print ' for information contact federico.binda@physics.uu.se\n'
 
     # Load dat files
     # ------
