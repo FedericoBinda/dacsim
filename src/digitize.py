@@ -43,33 +43,33 @@ def digitize(pulse, t, nbits=8, amprange=[-1.,1], sampfreq = 0.5, samples = 256,
     ratio = int(freq / sampfreq)
     
     codes = np.linspace(amprange[0],amprange[1],2**nbits)
-        
-    newpulse = np.digitize(pulse, codes)
+    dV = (amprange[1] - amprange[0]) / 2**nbits
+    th_V = threshold * dV
 
     if do_threshold:
-        baseline = -amprange[0]*2**nbits/(amprange[1]-amprange[0])
         try:
-            trigger = np.where(newpulse > baseline+threshold)[0][0]
+            trigger = np.where(pulse >= th_V)[0][0]
         except IndexError:
             return
-        pretrig = newpulse[trigger::-ratio][::-1]
+        pretrig = pulse[trigger::-ratio][::-1]
         diff = pretriggersamples - len(pretrig)
         if diff < 0:
             pretrig = pretrig[-diff:]
         elif diff > 0:
-            to_append = np.digitize(np.random.normal(0,noise,diff),codes)
+            to_append = np.random.normal(0,noise,diff)
             pretrig = np.append(to_append,pretrig)
-        newpulse = np.append(pretrig,newpulse[trigger+ratio::ratio])
-        
-    else:
-        newpulse = newpulse[::ratio]
+        newpulse = np.append(pretrig,pulse[trigger+ratio::ratio])
 
-    diff2 = samples - len(newpulse)
-    if diff2 < 0:
-        newpulse = newpulse[:samples]
-    elif diff2 > 0:
-        to_append = np.digitize(np.random.normal(0,noise,diff2),codes) 
-        newpulse = np.append(newpulse,to_append)
+        diff2 = samples - len(newpulse)
+        if diff2 < 0:
+            newpulse = newpulse[:samples]
+        elif diff2 > 0:
+            to_append = np.random.normal(0,noise,diff2)
+            newpulse = np.append(newpulse,to_append)
+    else:
+        newpulse = pulse[::ratio]
+
+    newpulse = np.digitize(newpulse, codes)
 
     return newpulse
     
