@@ -105,10 +105,12 @@ The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
 The output format is:
-[t_dig,[p_1,p_2,...,p_nps],pileup_log,inp_dict]
+[t_dig,[p_1,p_2,...,p_nps],pileup_log,inp_dict,coeff_dict,energy,intensity]
 where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses,
 pileup_log is a list containing the number of pile-up pulses in each event,
-and inp_dict is the input dictionary used to run the simulation
+inp_dict is the input dictionary used to run the simulation, coeff_dict is the dictionary
+with the scintillator pulse shape coefficients, energy and intensity are the dictionaries containing the
+energy distributions for electrons and protons.
 For information on how to read the file refer to the 
 `numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
 
@@ -185,9 +187,7 @@ if __name__ == '__main__':
     energy_p, intensity_p = load_energy_spectrum('proton')
 
     energy = {'electron': energy_e, 'proton': energy_p}
-    intensity = {'electron': intensity_e, 'proton': intensity_p}
-
-    
+    intensity = {'electron': intensity_e, 'proton': intensity_p}    
 
     # Read input file
     # ------
@@ -196,7 +196,10 @@ if __name__ == '__main__':
         inp_dict = read_input(sys.argv[1])
     except:
         sys.exit('Missing input file')
-    print inp_dict
+
+    print 'Input values:'
+    for key,value in inp_dict.items():
+        print ' -', key, value
     
 
     # Calculate scintillator functions
@@ -243,7 +246,7 @@ if __name__ == '__main__':
     # Save pulses
     # ------
 
-    save_output([t_dig,pulses_dig,pileup_log,inp_dict],inp_dict['output'])
+    save_output([t_dig,pulses_dig,pileup_log,inp_dict,coeff_dict,energy,intensity],inp_dict['output'])
 
     # Plot first pulse
     # ------
