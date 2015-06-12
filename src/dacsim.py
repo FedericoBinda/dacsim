@@ -213,6 +213,8 @@ if __name__ == '__main__':
     # Generate pulses
     # ------
 
+    print 'Generating scintillator pulses. . .'
+
     nps = inp_dict['nps']
     tot_cr = inp_dict['cre'] + inp_dict['crp']
 
@@ -229,25 +231,35 @@ if __name__ == '__main__':
     # Apply pileup
     # ------
 
+    print 'Applying pile-up. . .'
+
     pileup_pulses, pileup_log = apply_pileup(scint_pulses,tot_cr,plen)
 
     # Apply acquisition chain modules
     # ------
 
+    print 'Applying PMT. . .'
     pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
+    print 'Applying cable. . .'
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
+    print 'Applying noise. . .'
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
+    print 'Digitizing. . .'
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'], inp_dict['samples'],
                             inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
+    print 'Updating pile-up log. . .'
     pileup_log = [ n for n,p in zip(pileup_log,pulses_dig) if p is not None]
+    print 'Cleaning up pulse list. . .'
     pulses_dig = [ p for p in pulses_dig if p is not None ]
+    print 'Calculating digitized time axis. . .'
     t_dig = np.arange(0,float(inp_dict['samples'])/inp_dict['sampf'],1./inp_dict['sampf'])
 
     # Save pulses
     # ------
 
+    print 'Saving to output file. . .'
     save_output([t_dig,pulses_dig,pileup_log,inp_dict,coeff_dict,energy,intensity],inp_dict['output'])
-
+    
     # Plot first pulse
     # ------
     
@@ -256,3 +268,5 @@ if __name__ == '__main__':
         pl.plot(t_dig,pulses_dig[0])
         pl.xlabel('t [ns]')
         pl.show()
+    
+    print 'Done!'
