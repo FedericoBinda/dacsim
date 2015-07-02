@@ -105,7 +105,7 @@ The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
 The output format is:
-[t_dig,[p_1,p_2,...,p_nps],pileup_log,inp_dict,coeff_dict,energy,intensity]
+[t_dig,[p_1,p_2,...,p_nps],pileup_log,time_int,inp_dict,coeff_dict,energy,intensity]
 where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses,
 pileup_log is a list containing the number of pile-up pulses in each event,
 time_int is an array containing the time intervals between pulses,
@@ -230,6 +230,8 @@ if __name__ == '__main__':
         scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy['electron'], intensity['electron'], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy['proton'], intensity['proton'], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
+        del scint_pulses_e
+        del scint_pulses_p
         np.random.shuffle(scint_pulses)
     else:
         scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy[inp_dict['ptype']], intensity[inp_dict['ptype']], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
@@ -240,19 +242,24 @@ if __name__ == '__main__':
     print 'Applying pile-up. . .'
 
     pileup_pulses, pileup_log, time_int = apply_pileup(scint_pulses,tot_cr,plen)
+    del scint_pulses
 
     # Apply acquisition chain modules
     # ------
 
     print 'Applying PMT. . .'
     pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
+    del pileup_pulses
     print 'Applying cable. . .'
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
+    del pmt_pulses
     print 'Applying noise. . .'
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
+    del cable_pulses
     print 'Digitizing. . .'
     pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'], inp_dict['samples'],
                             inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
+    del pulses_noise
     print 'Updating pile-up log. . .'
     pileup_log = [ n for n,p in zip(pileup_log,pulses_dig) if p is not None]
     print 'Cleaning up pulse list. . .'
