@@ -29,7 +29,6 @@ The code reads an input file in which the following variables MUST be defined:
  - crp: the proton countrate [Hz]
  - output: the name of the output file (no extension)
  - dt: the time step for the simulated pulses [ns]
- - plen: the length of each pulse [ns]
  - lc: the light collection efficiency of the scintillator
  - qeff: the quantum efficiency of the photomultiplier tube
  - k = conversion from keVee to number of photons
@@ -44,6 +43,10 @@ The code reads an input file in which the following variables MUST be defined:
  - minV: the minimum input level of the digitizer [V]
  - maxV: the maximum input level of the digitizer [V]
  - sampf: the sampling frequency of the digitizer [GHz]
+ - samples: number of digitized samples to be acquired
+ - th_on: turn the digitizer's trigger threshold on (1) or off (0)
+ - th_lvl: trigger threshold level
+ - pretrig_samp: number of pretrigger samples
  - fp: if 1, plot the first simulated pulse
 
 example input file::
@@ -62,7 +65,6 @@ example input file::
     # scintillator parameters
     
     dt 0.05
-    plen 800
     lc 0.7
     qeff 0.26
     k 10.
@@ -86,6 +88,10 @@ example input file::
     minV -0.1
     maxV 1.2
     sampf 0.4
+    samples 256
+    th_on = 1
+    th_lvl = 50
+    pretrig_samp 64
 
     # plotting parameters
 
@@ -99,9 +105,13 @@ The codes generates a subdirectory called 'output' (if it does not exist) in
 the current directory and saves an output file with the name defined in the input
 and extension '.npy'.
 The output format is:
-[t_dig,[p_1,p_2,...,p_nps],inp_dict]
-where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses
-and inp_dict is the input dictionary used to run the simulation
+[t_dig,[p_1,p_2,...,p_nps],pileup_log,time_int,inp_dict,coeff_dict,energy,intensity]
+where t_dig is the digitized time axis, p_1,p_2,..,p_nps are the digitized pulses,
+pileup_log is a list containing the number of pile-up pulses in each event,
+time_int is an array containing the time intervals between pulses,
+inp_dict is the input dictionary used to run the simulation, coeff_dict is the dictionary
+with the scintillator pulse shape coefficients, energy and intensity are the dictionaries containing the
+energy distributions for electrons and protons.
 For information on how to read the file refer to the 
 `numpy.load <http://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html>`_ function
 
@@ -169,6 +179,11 @@ def read_input(fname):
     return inp_dict
 
 if __name__ == '__main__':
+    
+    # Print information
+
+    print '- Welcome to DACSIM (Data ACquisition SIMulation) -'
+    print ' for information contact federico.binda@physics.uu.se\n'
 
     # Load dat files
     # ------
@@ -178,9 +193,7 @@ if __name__ == '__main__':
     energy_p, intensity_p = load_energy_spectrum('proton')
 
     energy = {'electron': energy_e, 'proton': energy_p}
-    intensity = {'electron': intensity_e, 'proton': intensity_p}
-
-    
+    intensity = {'electron': intensity_e, 'proton': intensity_p}    
 
     # Read input file
     # ------
@@ -189,18 +202,24 @@ if __name__ == '__main__':
         inp_dict = read_input(sys.argv[1])
     except:
         sys.exit('Missing input file')
-    print inp_dict
+
+    print 'Input values:'
+    for key,value in inp_dict.items():
+        print ' -', key, value
     
 
     # Calculate scintillator functions
     # ------
 
     scint_dict = {}
-    t, scint_dict['proton'] = scintillator('proton',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
-    t, scint_dict['electron'] = amp_e = scintillator('electron',coeff_dict,dt=inp_dict['dt'],plen=inp_dict['plen'])
+    plen = float(inp_dict['samples'])/inp_dict['sampf']
+    t, scint_dict['proton'] = scintillator('proton',coeff_dict,dt=inp_dict['dt'],plen=plen)
+    t, scint_dict['electron'] = scintillator('electron',coeff_dict,dt=inp_dict['dt'],plen=plen)
 
     # Generate pulses
     # ------
+
+    print 'Generating scintillator pulses. . .'
 
     nps = inp_dict['nps']
     tot_cr = inp_dict['cre'] + inp_dict['crp']
@@ -211,6 +230,8 @@ if __name__ == '__main__':
         scint_pulses_e = generate_pulses(nel,t,scint_dict['electron'], energy['electron'], intensity['electron'], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses_p = generate_pulses(npr,t,scint_dict['proton'], energy['proton'], intensity['proton'], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
         scint_pulses = np.append(scint_pulses_e,scint_pulses_p)
+        del scint_pulses_e
+        del scint_pulses_p
         np.random.shuffle(scint_pulses)
     else:
         scint_pulses = generate_pulses(nps,t,scint_dict[inp_dict['ptype']], energy[inp_dict['ptype']], intensity[inp_dict['ptype']], inp_dict['k'], inp_dict['lc'], inp_dict['qeff'])
@@ -218,26 +239,47 @@ if __name__ == '__main__':
     # Apply pileup
     # ------
 
-    pileup_pulses = apply_pileup(scint_pulses,tot_cr,inp_dict['plen'])
+    print 'Applying pile-up. . .'
+
+    pileup_pulses, pileup_log, time_int = apply_pileup(scint_pulses,tot_cr,plen)
+    del scint_pulses
 
     # Apply acquisition chain modules
     # ------
 
+    print 'Applying PMT. . .'
     pmt_pulses = [ apply_pmt(p,t,inp_dict['ndyn'],inp_dict['delta'],inp_dict['sigma'],inp_dict['tt']) for p in pileup_pulses ]  
+    del pileup_pulses
+    print 'Applying cable. . .'
     cable_pulses = [ apply_cable(p,t,inp_dict['cutoff'],inp_dict['imp']) for p in pmt_pulses ]
+    del pmt_pulses
+    print 'Applying noise. . .'
     pulses_noise = [ apply_noise(p,inp_dict['noise']) for p in cable_pulses ]
-    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf']) for p in pulses_noise ]
-    t_dig = get_digitized_time(t,inp_dict['sampf'])
+    del cable_pulses
+    print 'Digitizing. . .'
+    pulses_dig = [ digitize(p,t,inp_dict['bits'], [inp_dict['minV'],inp_dict['maxV']],inp_dict['sampf'], inp_dict['samples'],
+                            inp_dict['th_on'], inp_dict['th_lvl'], inp_dict['pretrig_samp'], inp_dict['noise']) for p in pulses_noise ]
+    del pulses_noise
+    print 'Updating pile-up log. . .'
+    pileup_log = [ n for n,p in zip(pileup_log,pulses_dig) if p is not None]
+    print 'Cleaning up pulse list. . .'
+    pulses_dig = [ p for p in pulses_dig if p is not None ]
+    print 'Calculating digitized time axis. . .'
+    t_dig = np.arange(0,float(inp_dict['samples'])/inp_dict['sampf'],1./inp_dict['sampf'])
 
     # Save pulses
     # ------
 
-    save_output([t_dig,pulses_dig,inp_dict],inp_dict['output'])
-
+    print 'Saving to output file. . .'
+    save_output([t_dig,pulses_dig,pileup_log,time_int,inp_dict,coeff_dict,energy,intensity],inp_dict['output'])
+    
     # Plot first pulse
     # ------
     
     if inp_dict['fp'] == 1:
 
         pl.plot(t_dig,pulses_dig[0])
+        pl.xlabel('t [ns]')
         pl.show()
+    
+    print 'Done!'

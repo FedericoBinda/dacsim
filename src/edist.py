@@ -26,13 +26,16 @@ def load_energy_spectrum(which):
     # ------
 
     fname = 'dat/spectrum_' + which + '.dat'
-
-    try:
-        mydir = os.path.dirname(__file__)
-        cfilename = os.path.join(mydir[:-3], fname)
-    except NameError:
-        mydir = './src'
-        cfilename = os.path.join(mydir[:-4], fname)
+    
+    mydir = os.getcwd()
+    cfilename = os.path.join(mydir, fname)
+    if not os.path.isfile(cfilename):
+        try:
+            mydir = os.path.dirname(__file__)
+            cfilename = os.path.join(mydir[:-3], fname)
+        except NameError:
+            mydir = './src'
+            cfilename = os.path.join(mydir[:-4], fname)
 
     print 'Reading energy spectrum from', cfilename
 
